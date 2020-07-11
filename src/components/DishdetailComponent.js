@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Card, CardImg, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem, Modal, ModalHeader, ModalBody, Button, Row, Label, Col, FormGroup } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
-
+import { Loading } from './LoadingComponent';
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
 const minLength = (len) => (val) => val && (val.length >= len);
@@ -137,13 +137,7 @@ function RenderComments({comments, addComment, dishId})
           return (
               <li key={comment.id}>
                   <p>{comment.comment}</p>
-                  <p>-- {comment.author},
-                  &nbsp;
-                  {new Intl.DateTimeFormat('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: '2-digit'
-                      }).format(new Date(comments.date))}
+                  <p>-- {comment.author} , {new Intl.DateTimeFormat('en-US', {year: 'numeric',month: 'long',day: '2-digit'}).format(new Date(comments.date))}
                   </p>
               </li>
           )
@@ -166,16 +160,29 @@ function RenderComments({comments, addComment, dishId})
 
     const DishDetail = (props) => {
 
-       
-        const dish = props.dish
-        if(dish==null)
+        if(props.isLoading)
         {
-            return(
-                <div></div>
-            )
-        }
-        
-        return(
+          return(
+            <div className="container">
+              <div className="row">
+                <Loading />
+              </div>
+            </div>
+          );
+        }  
+        else if(props.errMess)
+        {
+          return(
+            <div className="container">
+              <div className="row">
+          <h4>{props.errMess}</h4>
+              </div>
+            </div>
+          );
+        }     
+       else if(props.dish!=null)
+        {
+          return(
             <div className='container'>
 
             <div className="row">
@@ -205,9 +212,18 @@ function RenderComments({comments, addComment, dishId})
             </div>
             </div>
 
-        )
-
+        );
+      }
+      else
+      {
+        return(
+          <div></div>
+      )
     }
+        
+       
+
+}
     
        
     
