@@ -2,7 +2,7 @@ import * as ActionTypes from './ActionTypes';
 import { DISHES } from '../shared/dishes';
 import { baseUrl } from '../shared/baseUrl'; 
 
-export const addComment = (dishId, rating, author, comment) => ({
+export const addComment = (comment) => ({
     type: ActionTypes.ADD_COMMENT,
     payload: comment
 });
@@ -14,41 +14,33 @@ export const postComment = (dishId, rating, author, comment) => (dispatch) => {
         rating: rating,
         author: author,
         comment: comment
-    }
+    };
     newComment.date = new Date().toISOString();
-
+    
     return fetch(baseUrl + 'comments', {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(newComment),
         headers: {
-            'Content-Type': 'application/json'
+          "Content-Type": "application/json"
         },
-        credentials: 'same-origin'
+        credentials: "same-origin"
     })
-    .then(response => { // to show the error from server side
-        if(response.ok)
-        {
-            return response;
+    .then(response => {
+        if (response.ok) {
+          return response;
+        } else {
+          var error = new Error('Error ' + response.status + ': ' + response.statusText);
+          error.response = response;
+          throw error;
         }
-        else
-        {
-            var error = new Error('Error ' + response.status + ': ' + response.statusText);
-            error.response = response;
+      },
+      error => {
             throw error;
-        }
-    },
-    error =>{       // error handler
-
-        var errmess = new Error(error.message);
-        throw errmess;
-
-    })
+      })
     .then(response => response.json())
     .then(response => dispatch(addComment(response)))
-    .catch(error => {console.log('Post comments ', error.message);
-        alert('Your comment could not be posted\nError: '+error.message)})
-    
-}
+    .catch(error =>  { console.log('post comments', error.message); alert('Your comment could not be posted\nError: '+error.message); });
+};
 
 export const fetchDishes = () => (dispatch) => {
 
